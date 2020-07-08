@@ -1,0 +1,33 @@
+name: vulcain
+description: Signalisation de feux de forêt
+
+publish_to: "none"
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_map: any
+  flutter_signin_button: any
+  flutter_map_marker_cluster: any
+  flutter_speed_dial: any
+  firebase_core: any
+  firebase_auth: any
+  google_sign_in: any
+  location: any
+  geolocator: any
+  dart_shp: any
+  path_provider: any
+  path: any
+  sqflite: any
+  flutter_compass: any
+  photo_view: any
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/dfci_level_1.json
+    - assets/dfci_level_2.json
+    - assets/dfci_level_3.json
+    - assets/

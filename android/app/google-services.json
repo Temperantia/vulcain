@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1098839863397",
+    "firebase_url": "https://vulcain-dc2a5.firebaseio.com",
+    "project_id": "vulcain-dc2a5",
+    "storage_bucket": "vulcain-dc2a5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1098839863397:android:cf332da940a054186ad68c",
+        "android_client_info": {
+          "package_name": "com.inclusive.vulcain"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1098839863397-ddr3nk7h1ns4qbqtfonu77njonimmhhp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAtRRyBgSlqhmQX9jgc3Q9Lgb5muYJiy8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1098839863397-ddr3nk7h1ns4qbqtfonu77njonimmhhp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1098839863397-ur3t7l19fo92uctvvdd1q7hamo537v48.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.inclusive.vulcain"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
