@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -23,16 +23,39 @@ class _MapPageState extends State<MapPage> {
   bool _showSearch = false;
   double _latitude = 48.8566;
   double _longitude = 2.3522;
-  double _zoom = 5;
+  double _zoom = 7;
   List _tiles = [];
   bool _loading = false;
   bool _newFire = false;
+  bool _hasPrivilege = false;
+  String _windDirection;
+  int _windSpeed = -1;
+  final TextEditingController _windSpeedController = TextEditingController();
   var _directionController = PhotoViewController();
 
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    _windSpeedController.addListener(_onSpeedWindChanged);
     _updateLocation();
+  }
+
+  void _onSpeedWindChanged() {
+    setState(() {
+      _windSpeed = int.tryParse(_windSpeedController.text ?? -1);
+    });
+  }
+
+  void _onFireDeclared() {
+    if (_hasPrivilege) {
+      print("save fire to the local DB");
+    } else {
+      print("just send the notification via sendinblue api");
+    }
   }
 
   void _updateLocation() {
@@ -46,6 +69,77 @@ class _MapPageState extends State<MapPage> {
 
   void _logout() {
     FirebaseAuth.instance.signOut();
+  }
+
+  Widget _declareFire(BuildContext context) {
+    return Container(
+        height: 220,
+        width: 250,
+        padding: const EdgeInsets.all(5),
+        color: Colors.white,
+        child: Column(
+          children: <Widget>[
+            Text('Direction du vent'),
+            Container(
+                child: DropdownButton<String>(
+              value: _windDirection,
+              items: <String>[
+                'nord',
+                'sud',
+                'est',
+                'ouest',
+                'nord-est',
+                'nord-ouest',
+                'sud-est',
+                'sud-ouest'
+              ]
+                  .map<DropdownMenuItem<String>>((String value) =>
+                      DropdownMenuItem<String>(
+                          value: value, child: Text(value)))
+                  .toList(),
+              onChanged: (String newValue) => setState(() {
+                _windDirection = newValue;
+              }),
+              isExpanded: true,
+            )),
+            Text('Vitesse du vent en m/s'),
+            TextField(
+              keyboardType: TextInputType.number,
+              controller: _windSpeedController,
+              inputFormatters: <TextInputFormatter>[
+                WhitelistingTextInputFormatter.digitsOnly
+              ],
+            ),
+            Container(
+              padding: const EdgeInsets.all(15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Container(
+                      child: FlatButton(
+                          color: Colors.grey,
+                          onPressed: () {
+                            _onFireDeclared();
+                            setState(() {
+                              _newFire = false;
+                            });
+                          },
+                          child: const Text('Valider'))),
+                  Container(
+                      child: FlatButton(
+                          color: Colors.grey,
+                          colorBrightness: Brightness.dark,
+                          onPressed: () {
+                            setState(() {
+                              _newFire = false;
+                            });
+                          },
+                          child: const Text('Annuler')))
+                ],
+              ),
+            )
+          ],
+        ));
   }
 
   Widget _buildMap() {
@@ -71,6 +165,8 @@ class _MapPageState extends State<MapPage> {
           },
           center: LatLng(_latitude, _longitude),
           zoom: _zoom,
+          minZoom: 7,
+          maxZoom: 12,
           onLongPress: (LatLng point) => setState(() {
                 _markers.add(
                   Marker(
@@ -157,35 +253,42 @@ class _MapPageState extends State<MapPage> {
                       }
                       _tiles = future.data;
                       return Stack(children: [
-                        if (!_newFire) _buildMap(),
+                        _buildMap(),
                         if (_newFire)
-                          Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Expanded(
-                                  child: PhotoView(
-                                    controller: _directionController,
-                                    initialScale: 1.0,
-                                    minScale: 1.0,
-                                    maxScale: 1.0,
-                                    enableRotation: true,
-                                    imageProvider:
-                                        AssetImage('assets/compass.jpg'),
-                                  ),
-                                ),
-                                Text(
-                                  (_directionController.rotation /
-                                          pi /
-                                          2 *
-                                          360 %
-                                          360)
-                                      .toString(),
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              ],
-                            ),
+                          Align(
+                            alignment: Alignment.topCenter,
+                            child: _declareFire(context),
                           )
+
+                        // if (!_newFire) _buildMap(),
+                        // if (_newFire)
+                        //   Center(
+                        //     child: Column(
+                        //       mainAxisAlignment: MainAxisAlignment.center,
+                        //       children: <Widget>[
+                        //         Expanded(
+                        //           child: PhotoView(
+                        //             controller: _directionController,
+                        //             initialScale: 1.0,
+                        //             minScale: 1.0,
+                        //             maxScale: 1.0,
+                        //             enableRotation: true,
+                        //             imageProvider:
+                        //                 AssetImage('assets/compass.jpg'),
+                        //           ),
+                        //         ),
+                        //         Text(
+                        //           (_directionController.rotation /
+                        //                   pi /
+                        //                   2 *
+                        //                   360 %
+                        //                   360)
+                        //               .toString(),
+                        //           style: TextStyle(color: Colors.black),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   )
                       ]);
                     },
                   );
