@@ -6,6 +6,8 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:vulcain/utils.dart';
 
+import 'package:vulcain/fire_start.dart';
+
 Database database;
 
 Future openDb() async {
@@ -15,10 +17,30 @@ Future openDb() async {
       await insertTiles(db, 'dfci_level_1');
       await insertTiles(db, 'dfci_level_2');
       await insertTiles(db, 'dfci_level_3');
+      await initFireDB(db);
     },
     version: 1,
   );
   return database;
+}
+
+Future initFireDB(db) async {
+  print("create db for fire start");
+  await db.execute(
+    ''' CREATE TABLE fire_start(id INTEGER PRIMARY KEY, windDirection STRING, windSpeed INTEGER, latitude REAL, longitude REAL)''',
+  );
+  print("table fire start created");
+}
+
+Future<void> createFireEntry(FireStart fstart) async {
+  await database.insert('fire_start', fstart.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace);
+}
+
+Future<void> deleteFireEntry(int id) async {
+  final String query =
+      'DELETE FROM fire_start WHERE ID =' + id.toString() + ' ;';
+  return database.execute(query);
 }
 
 Future insertTiles(db, table) async {
