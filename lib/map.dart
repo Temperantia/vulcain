@@ -25,6 +25,7 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   List<Marker> _markers = [];
+  List<Marker> _surfaces = [];
   List<Polyline> _polylines = [];
   List<Polygon> _polygones = [];
   MapController _controller = MapController();
@@ -34,10 +35,13 @@ class _MapPageState extends State<MapPage> {
   double _zoom = 7;
   List _tiles = [];
   bool _loading = false;
-  bool _newFire = false;
+  bool _newPoint = false;
+  bool _showSurfaces = false;
   LatLng _firePosition;
+  LatLng _pointPosition;
   bool _hasPrivilege = false;
 
+  String _typeOfPoint = "départ de feu";
   String _windDirection;
   int _windSpeed = -1;
   final TextEditingController _windSpeedController = TextEditingController();
@@ -63,13 +67,13 @@ class _MapPageState extends State<MapPage> {
   Future<String> doPost(FireStart fstart) async {
     var url = 'https://api.sendinblue.com/v3/smtp/email';
     var body = jsonEncode({
-      "sender": {"name": "Robin despouys", "email": "robin.despouys@gmail.com"},
+      "sender": {"name": "Application vulcain", "email": "robin.despouys@gmail.com"},
       "to": [
-        {"email": "robin.despouys@gmail.com", "name": "robin osbor"}
+        {"email": "appvulcain@gmail.com", "name": "app Vulcain"}
       ],
-      "subject": "Voici une notification de vulkain",
+      "subject": "Voici une notification de Vulcain",
       "htmlContent":
-          "<html><head></head><body><p>Bonjour,</p> Ceci est une alerte d'incendie venant de l'application vulkain <br><br> latitude ${fstart.latitude} <br> longitude ${fstart.longitude} <br> vitesse du vent en km/h : ${fstart.windSpeed} <br> direction du vent : ${fstart.windDirection}</p></body></html>"
+          "<html><head></head><body><p>Bonjour,</p> Ceci est une alerte d'incendie venant de l'application Vulcain <br><br> latitude ${fstart.latitude} <br> longitude ${fstart.longitude} <br> vitesse du vent en km/h : ${fstart.windSpeed} <br> direction du vent : ${fstart.windDirection}</p></body></html>"
     });
     final http.Response response = await http.post(url,
         headers: {
@@ -199,10 +203,56 @@ class _MapPageState extends State<MapPage> {
     return estimations;
   }
 
+  List<double> _propagationEstimationMeters(int _windSpeed) {
+    List<double> estimations = [];
+    int metrePerHour = _windSpeed * 30;
+
+    estimations.add(metrePerHour / 4); // result in meters
+    estimations.add(metrePerHour / 2);
+    estimations.add(metrePerHour / 1);
+    return estimations;
+  }
+
+  void _showSurfaceMarkers() {
+    setState(() {
+      for (final marker in _surfaces) {
+        _markers.add(marker);
+      }
+    });
+  }
+
+  void _hideSurfaceMarkers() {
+    setState(() {
+      for (final marker in _surfaces) {
+      _markers.removeWhere((element) => element.point == marker.point);
+      }
+    });
+  }
+
+  Marker _getSurfaceMarker(List<LatLng> triangle, double distance) {
+    double _latitude =
+        (triangle[0].latitude + triangle[1].latitude + triangle[2].latitude) /
+            3;
+    double _longitude = (triangle[0].longitude +
+            triangle[1].longitude +
+            triangle[2].longitude) /
+        3;
+    double _surface = pi * distance * distance / 6;
+    return Marker(
+        point: LatLng(_latitude, _longitude),
+        width: 100,
+        height: 40,
+        builder: (context) => Container(
+            child: Text("${_surface.toInt().toString()} m²",
+                style: TextStyle(color: Colors.white))));
+  }
+
   void _drawFireConePropagation(FireStart fstart) {
     LatLng _origin = LatLng(fstart.latitude, fstart.longitude);
 
     List<double> estimations = _propagationEstimation(fstart.windSpeed);
+    List<double> estimationsMeters =
+        _propagationEstimationMeters(fstart.windSpeed);
 
     Polyline _polyline = _getTriangleFromMediane(
         _origin, estimations[2] * 1.3, fstart.windDirection);
@@ -218,17 +268,37 @@ class _MapPageState extends State<MapPage> {
         color: Color.fromARGB(110, 1100, 100, 30), points: _polyline2.points);
     Polygon _polygone3 = Polygon(
         color: Color.fromARGB(100, 100, 100, 40), points: _polyline3.points);
+
+    Marker _marker1 =
+        _getSurfaceMarker(_polygone1.points, estimationsMeters[0]);
+    Marker _marker2 =
+        _getSurfaceMarker(_polygone2.points, estimationsMeters[1]);
+    Marker _marker3 =
+        _getSurfaceMarker(_polygone3.points, estimationsMeters[2]);
+
     setState(() {
       _polylines.add(_polyline);
       _polygones.add(_polygone3);
       _polygones.add(_polygone2);
       _polygones.add(_polygone1);
+
+      _surfaces.add(_marker1);
+      _surfaces.add(_marker2);
+      _surfaces.add(_marker3);
     });
+
+    if (_showSurfaces) {
+      setState(() {
+        _markers.add(_marker1);
+        _markers.add(_marker2);
+        _markers.add(_marker3);
+      });
+    }
   }
 
   void _sendMailNotification(FireStart fireStart) async {
     final String res = await doPost(fireStart);
-    print("c a l air r avoir marche $res");
+    print("resultat de la requête post $res");
   }
 
   void _onFireDeclared() async {
@@ -262,43 +332,67 @@ class _MapPageState extends State<MapPage> {
 
   Widget _declareFire(BuildContext context) {
     return Container(
-        height: 220,
+        height: 420,
         width: 250,
         padding: const EdgeInsets.all(5),
         color: Colors.white,
         child: Column(
           children: <Widget>[
-            Text('Direction du vent'),
-            Container(
-                child: DropdownButton<String>(
-              value: _windDirection,
-              items: <String>[
-                'nord',
-                'sud',
-                'est',
-                'ouest',
-                'nord-est',
-                'nord-ouest',
-                'sud-est',
-                'sud-ouest'
-              ]
-                  .map<DropdownMenuItem<String>>((String value) =>
-                      DropdownMenuItem<String>(
-                          value: value, child: Text(value)))
-                  .toList(),
-              onChanged: (String newValue) => setState(() {
-                _windDirection = newValue;
-              }),
-              isExpanded: true,
-            )),
-            Text('Vitesse du vent en km/h'),
-            TextField(
-              keyboardType: TextInputType.number,
-              controller: _windSpeedController,
-              inputFormatters: <TextInputFormatter>[
-                WhitelistingTextInputFormatter.digitsOnly
-              ],
-            ),
+            if (_hasPrivilege) Text('Type de point'),
+            if (_hasPrivilege)
+              Container(
+                  child: DropdownButton<String>(
+                value: _typeOfPoint,
+                items: <String>[
+                  'départ de feu',
+                  'point sensible',
+                  'hydrant',
+                  'point de transit',
+                  'emplacement PC'
+                ]
+                    .map<DropdownMenuItem<String>>((String value) =>
+                        DropdownMenuItem<String>(
+                            value: value, child: Text(value)))
+                    .toList(),
+                onChanged: (String newValue) => setState(() {
+                  _typeOfPoint = newValue;
+                }),
+                isExpanded: true,
+              )),
+            if (_typeOfPoint == 'départ de feu') Text('Direction du vent'),
+            if (_typeOfPoint == 'départ de feu')
+              Container(
+                  child: DropdownButton<String>(
+                value: _windDirection,
+                items: <String>[
+                  'nord',
+                  'sud',
+                  'est',
+                  'ouest',
+                  'nord-est',
+                  'nord-ouest',
+                  'sud-est',
+                  'sud-ouest'
+                ]
+                    .map<DropdownMenuItem<String>>((String value) =>
+                        DropdownMenuItem<String>(
+                            value: value, child: Text(value)))
+                    .toList(),
+                onChanged: (String newValue) => setState(() {
+                  _windDirection = newValue;
+                }),
+                isExpanded: true,
+              )),
+            if (_typeOfPoint == 'départ de feu')
+              Text('Vitesse du vent en km/h'),
+            if (_typeOfPoint == 'départ de feu')
+              TextField(
+                keyboardType: TextInputType.number,
+                controller: _windSpeedController,
+                inputFormatters: <TextInputFormatter>[
+                  WhitelistingTextInputFormatter.digitsOnly
+                ],
+              ),
             Container(
               padding: const EdgeInsets.all(15),
               child: Row(
@@ -308,9 +402,34 @@ class _MapPageState extends State<MapPage> {
                       child: FlatButton(
                           color: Colors.grey,
                           onPressed: () {
-                            _onFireDeclared();
+                            Icon _iconPoint;
+                            switch (_typeOfPoint) {
+                              case 'départ de feu':
+                                _iconPoint = Icon(Icons.whatshot);
+                                _firePosition = _pointPosition;
+                                _onFireDeclared();
+                                break;
+                              case 'point sensible':
+                                _iconPoint = Icon(Icons.warning);
+                                break;
+                              case 'hydrant':
+                                _iconPoint = Icon(Icons.ac_unit);
+                                break;
+                              case 'point de transit':
+                                _iconPoint = Icon(Icons.directions);
+                                break;
+                              case 'emplacement PC':
+                                _iconPoint = Icon(Icons.business);
+                                break;
+                            }
                             setState(() {
-                              _newFire = false;
+                              _markers.add(
+                                Marker(
+                                  point: _pointPosition,
+                                  builder: (ctx) => _iconPoint,
+                                ),
+                              );
+                              _newPoint = false;
                             });
                           },
                           child: const Text('Valider'))),
@@ -320,7 +439,7 @@ class _MapPageState extends State<MapPage> {
                           colorBrightness: Brightness.dark,
                           onPressed: () {
                             setState(() {
-                              _newFire = false;
+                              _newPoint = false;
                             });
                           },
                           child: const Text('Annuler')))
@@ -355,16 +474,17 @@ class _MapPageState extends State<MapPage> {
           center: LatLng(_latitude, _longitude),
           zoom: _zoom,
           minZoom: 7,
-          maxZoom: 12,
+          maxZoom: 15,
           onLongPress: (LatLng point) => setState(() {
-                _markers.add(
-                  Marker(
-                    point: point,
-                    builder: (ctx) => Icon(Icons.whatshot),
-                  ),
-                );
-                _firePosition = point;
-                _newFire = true;
+                // _markers.add(
+                //   Marker(
+                //     point: point,
+                //     builder: (ctx) => Icon(Icons.whatshot),
+                //   ),
+                // );
+                // _firePosition = point;
+                _pointPosition = point;
+                _newPoint = true;
               })),
       layers: [
         TileLayerOptions(
@@ -419,8 +539,23 @@ class _MapPageState extends State<MapPage> {
                 onTap: () {
                   setState(() {
                     _hasPrivilege = !_hasPrivilege;
+                    _typeOfPoint = "départ de feu";
                   });
-                })
+                }),
+                SpeedDialChild(
+                  child: Icon(Icons.change_history),
+                  label: _showSurfaces ? 
+                    'Cacher surfaces' : 'Afficher surfaces',
+                  onTap: () {
+                    if (!_showSurfaces) {
+                      _showSurfaceMarkers();
+                      _showSurfaces = true;
+                    } else {
+                      _hideSurfaceMarkers();
+                      _showSurfaces = false;
+                    }
+                  }
+                )
           ],
         ),
         body: _showSearch
@@ -457,14 +592,14 @@ class _MapPageState extends State<MapPage> {
                       _tiles = future.data;
                       return Stack(children: [
                         _buildMap(),
-                        if (_newFire)
+                        if (_newPoint)
                           Align(
                             alignment: Alignment.topCenter,
                             child: _declareFire(context),
-                          )
+                          ),
 
-                        // if (!_newFire) _buildMap(),
-                        // if (_newFire)
+                        // if (!_newPoint) _buildMap(),
+                        // if (_newPoint)
                         //   Center(
                         //     child: Column(
                         //       mainAxisAlignment: MainAxisAlignment.center,
