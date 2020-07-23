@@ -39,7 +39,7 @@ class _MapPageState extends State<MapPage> {
   bool _showSurfaces = false;
   LatLng _firePosition;
   LatLng _pointPosition;
-  bool _hasPrivilege = false;
+  bool _hasPrivilege = true;
 
   String _typeOfPoint = "départ de feu";
   String _windDirection;
@@ -73,7 +73,7 @@ class _MapPageState extends State<MapPage> {
       ],
       "subject": "Voici une notification de Vulcain",
       "htmlContent":
-          "<html><head></head><body><p>Bonjour,</p> Ceci est une alerte d'incendie venant de l'application Vulcain <br><br> latitude ${fstart.latitude} <br> longitude ${fstart.longitude} <br> vitesse du vent en km/h : ${fstart.windSpeed} <br> direction du vent : ${fstart.windDirection}</p></body></html>"
+          "<html><head></head><body><p>Bonjour, Ceci est une alerte d'incendie venant de l'application Vulcain <br><br> latitude ${fstart.latitude} <br> longitude ${fstart.longitude} <br> vitesse du vent en km/h : ${fstart.windSpeed} <br> direction du vent : ${fstart.windDirection}</p></body></html>"
     });
     final http.Response response = await http.post(url,
         headers: {
@@ -100,12 +100,22 @@ class _MapPageState extends State<MapPage> {
       LatLng _originPoint, double _distance, String _windDirection) {
     double angle60AsRadian = (60 * pi) / 180;
     double angle15AsRadian = (15 * pi) / 180;
+    double angle30AsRadian = (30 * pi) / 180;
     double angle75AsRadian = (75 * pi) / 180;
-    var c = _distance / sin(angle60AsRadian);
-    var longx = cos(angle15AsRadian) * c;
-    var latx = sin(angle15AsRadian) * c;
-    var longx2 = cos(angle75AsRadian) * c;
-    var latx2 = cos(pi / 4) * _distance;
+    
+    double latitudeAsRadian = (_originPoint.latitude * pi) / 180;
+    double estim1MinuteAngle = 1000 * 40075 * cos(latitudeAsRadian) / 360 / 60 ;
+
+    var _distanceLatitude = _distance;
+    var _distanceLongitude = _distance * 1810 / estim1MinuteAngle;
+
+    var cLat = _distanceLatitude / sin(angle60AsRadian);
+    var cLong = _distanceLongitude / sin(angle60AsRadian);
+
+    var longx = cos(angle15AsRadian) * cLong;
+    var latx = sin(angle15AsRadian) * cLat;
+    var longx2 = cos(angle75AsRadian) * cLong;
+    var latx2 = cos(pi / 4) * _distanceLongitude;
 
     switch (_windDirection) {
       case 'sud-ouest':
@@ -142,39 +152,36 @@ class _MapPageState extends State<MapPage> {
         break;
       case 'nord':
         {
-          longx = _distance / tan(angle60AsRadian);
-          latx = _distance;
+          longx = _distanceLongitude / tan(angle60AsRadian);
+          latx = _distanceLatitude;
 
-          longx2 = -_distance / tan(angle60AsRadian);
-          latx2 = _distance;
+          longx2 = -_distanceLongitude / tan(angle60AsRadian);
+          latx2 = _distanceLatitude;
         }
         break;
       case 'sud':
         {
-          longx = -_distance / tan(angle60AsRadian);
-          latx = -_distance;
-
-          longx2 = _distance / tan(angle60AsRadian);
-          latx2 = -_distance;
+          longx = -_distanceLongitude / tan(angle60AsRadian);
+          latx = - _distanceLatitude;
+          longx2 = _distanceLongitude / tan(angle60AsRadian);
+          latx2 = -_distanceLatitude;
         }
         break;
 
       case 'est':
         {
-          longx = _distance;
-          latx = _distance / tan(angle60AsRadian);
-
-          longx2 = _distance;
-          latx2 = -_distance / tan(angle60AsRadian);
+          longx = _distanceLongitude;
+          latx = _distanceLatitude * tan(angle30AsRadian);
+          longx2 = _distanceLongitude;
+          latx2 = -_distanceLatitude * tan(angle30AsRadian);
         }
         break;
       case 'ouest':
         {
-          longx = -_distance;
-          latx = _distance / tan(angle60AsRadian);
-
-          longx2 = -_distance;
-          latx2 = -_distance / tan(angle60AsRadian);
+          longx = -_distanceLongitude;
+          latx = _distanceLatitude / tan(angle60AsRadian);
+          longx2 = -_distanceLongitude;
+          latx2 = -_distanceLatitude / tan(angle60AsRadian);
         }
         break;
     }
@@ -196,19 +203,23 @@ class _MapPageState extends State<MapPage> {
   List<double> _propagationEstimation(int _windSpeed) {
     List<double> estimations = [];
     int metrePerHour = _windSpeed * 30;
-
-    estimations.add(0.017 * metrePerHour / (4 * 1200)); // result in minutes
-    estimations.add(0.017 * metrePerHour / (2 * 1200));
-    estimations.add(0.017 * metrePerHour / (1200));
+    double estim15 = 0.017 * metrePerHour / (4 * 1810);
+    double estim45 = estim15 * 3;
+    estimations.add(estim15); // result in minutes
+    estimations.add(0.017 * metrePerHour / (2 * 1810));
+    estimations.add(estim45);
+    estimations.add(0.017 * metrePerHour / (1810));
     return estimations;
   }
 
   List<double> _propagationEstimationMeters(int _windSpeed) {
     List<double> estimations = [];
     int metrePerHour = _windSpeed * 30;
-
-    estimations.add(metrePerHour / 4); // result in meters
+    double estim15 = metrePerHour / 4;
+    double estim45 = estim15 * 3;
+    estimations.add(estim15); // result in meters
     estimations.add(metrePerHour / 2);
+    estimations.add(estim45);
     estimations.add(metrePerHour / 1);
     return estimations;
   }
@@ -229,7 +240,7 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  Marker _getSurfaceMarker(List<LatLng> triangle, double distance) {
+  Marker _getSurfaceMarker(List<LatLng> triangle, double distance, String legende) {
     double _latitude =
         (triangle[0].latitude + triangle[1].latitude + triangle[2].latitude) /
             3;
@@ -237,13 +248,13 @@ class _MapPageState extends State<MapPage> {
             triangle[1].longitude +
             triangle[2].longitude) /
         3;
-    double _surface = pi * distance * distance / 6;
+    double _surface = pi * distance * distance / (6 * 10000);
     return Marker(
         point: LatLng(_latitude, _longitude),
-        width: 100,
+        width: 250,
         height: 40,
         builder: (context) => Container(
-            child: Text("${_surface.toInt().toString()} m²",
+            child: Text(" $legende : ${_surface.toInt().toString()} ha",
                 style: TextStyle(color: Colors.white))));
   }
 
@@ -255,29 +266,36 @@ class _MapPageState extends State<MapPage> {
         _propagationEstimationMeters(fstart.windSpeed);
 
     Polyline _polyline = _getTriangleFromMediane(
-        _origin, estimations[2] * 1.3, fstart.windDirection);
+        _origin, estimations[3] * 1.2, fstart.windDirection);
     Polyline _polyline1 =
         _getTriangleFromMediane(_origin, estimations[0], fstart.windDirection);
     Polyline _polyline2 =
         _getTriangleFromMediane(_origin, estimations[1], fstart.windDirection);
-    Polyline _polyline3 =
+        Polyline _polyline3 =
         _getTriangleFromMediane(_origin, estimations[2], fstart.windDirection);
+    Polyline _polyline4 =
+        _getTriangleFromMediane(_origin, estimations[3], fstart.windDirection);
     Polygon _polygone1 = Polygon(
-        color: Color.fromARGB(120, 120, 100, 20), points: _polyline1.points);
+        color: Color.fromARGB(60, 80, 100, 20), points: _polyline1.points);
     Polygon _polygone2 = Polygon(
-        color: Color.fromARGB(110, 1100, 100, 30), points: _polyline2.points);
+        color: Color.fromARGB(200, 240, 100, 60), points: _polyline2.points);
     Polygon _polygone3 = Polygon(
-        color: Color.fromARGB(100, 100, 100, 40), points: _polyline3.points);
+        color: Color.fromARGB(400, 480, 100, 90), points: _polyline3.points);
+        Polygon _polygone4 = Polygon(
+        color: Color.fromARGB(800, 800, 100, 120), points: _polyline4.points);
 
     Marker _marker1 =
-        _getSurfaceMarker(_polygone1.points, estimationsMeters[0]);
+        _getSurfaceMarker(_polygone1.points, estimationsMeters[0], "T+15 min");
     Marker _marker2 =
-        _getSurfaceMarker(_polygone2.points, estimationsMeters[1]);
+        _getSurfaceMarker(_polygone2.points, estimationsMeters[1], "T+30 min");
     Marker _marker3 =
-        _getSurfaceMarker(_polygone3.points, estimationsMeters[2]);
+        _getSurfaceMarker(_polygone3.points, estimationsMeters[2], "T+45 min");
+    Marker _marker4 =
+        _getSurfaceMarker(_polygone4.points, estimationsMeters[3], "T+60 min");
 
     setState(() {
       _polylines.add(_polyline);
+      _polygones.add(_polygone4);
       _polygones.add(_polygone3);
       _polygones.add(_polygone2);
       _polygones.add(_polygone1);
@@ -285,6 +303,7 @@ class _MapPageState extends State<MapPage> {
       _surfaces.add(_marker1);
       _surfaces.add(_marker2);
       _surfaces.add(_marker3);
+      _surfaces.add(_marker4);
     });
 
     if (_showSurfaces) {
@@ -292,6 +311,7 @@ class _MapPageState extends State<MapPage> {
         _markers.add(_marker1);
         _markers.add(_marker2);
         _markers.add(_marker3);
+        _markers.add(_marker4);
       });
     }
   }
@@ -531,7 +551,7 @@ class _MapPageState extends State<MapPage> {
                 onTap: () {
                   setState(() => _showSearch = !_showSearch);
                 }),
-            SpeedDialChild(
+          /*  SpeedDialChild(
                 child: Icon(Icons.my_location),
                 label: _hasPrivilege
                     ? 'Passer au mode gratuit'
@@ -540,12 +560,12 @@ class _MapPageState extends State<MapPage> {
                   setState(() {
                     _hasPrivilege = !_hasPrivilege;
                     _typeOfPoint = "départ de feu";
-                  });
-                }),
+                  }); 
+                }), */
                 SpeedDialChild(
                   child: Icon(Icons.change_history),
                   label: _showSurfaces ? 
-                    'Cacher surfaces' : 'Afficher surfaces',
+                    'Cacher les détails' : 'Afficher les détails',
                   onTap: () {
                     if (!_showSurfaces) {
                       _showSurfaceMarkers();
