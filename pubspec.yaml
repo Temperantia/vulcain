@@ -1,6 +1,6 @@
 name: vulcain
 description: Signalisation de feux de forêt
-
+version: 1.0.0+1
 publish_to: "none"
 
 environment:
