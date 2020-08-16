@@ -42,7 +42,7 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Getting user&apos;s location on his demand</string>
+	<string>Getting user&apos;s location on his demand to display his position on the map so he can place fires near of him directly</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Permanent location is not required</string>
 	<key>CFBundleURLTypes</key>

@@ -14,7 +14,7 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		FA7B9A9D24E48FAC00720595 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FA7B9A9C24E48FAC00720595 /* GoogleService-Info.plist */; };
+		FA70A3EE24E84C4C005F1661 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FA70A3ED24E84C4C005F1661 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,8 +35,8 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DC419DD01D26D81CAADF2466 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
+		FA70A3ED24E84C4C005F1661 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		FA7B9A9724DF915700720595 /* AppAuth.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AppAuth.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA7B9A9C24E48FAC00720595 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		FA7D758B24E54F1D00F037D3 /* Mission Vulcain.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Mission Vulcain.entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -102,8 +102,8 @@
 				97C147021CF9000F007C117D /* Info.plist */,
 				97C146F11CF9000F007C117D /* Supporting Files */,
 				1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */,
-				FA7B9A9C24E48FAC00720595 /* GoogleService-Info.plist */,
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
+				FA70A3ED24E84C4C005F1661 /* GoogleService-Info.plist */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 			);
@@ -191,9 +191,9 @@
 			files = (
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
+				FA70A3EE24E84C4C005F1661 /* GoogleService-Info.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
-				FA7B9A9D24E48FAC00720595 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -375,12 +375,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "Runner/Mission Vulcain.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = C26WXW47YN;
 				ENABLE_BITCODE = NO;
-				FLUTTER_BUILD_NUMBER = 2;
+				FLUTTER_BUILD_NUMBER = 4;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
@@ -397,7 +397,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ionicframework.usts;
 				PRODUCT_NAME = "Mission Vulcain";
-				PROVISIONING_PROFILE_SPECIFIER = "mission vulcain distribution";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -518,12 +518,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "Runner/Mission Vulcain.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = C26WXW47YN;
 				ENABLE_BITCODE = NO;
-				FLUTTER_BUILD_NUMBER = 2;
+				FLUTTER_BUILD_NUMBER = 4;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
@@ -540,7 +540,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ionicframework.usts;
 				PRODUCT_NAME = "Mission Vulcain";
-				PROVISIONING_PROFILE_SPECIFIER = "mission vulcain distribution";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -555,12 +555,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "Runner/Mission Vulcain.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = C26WXW47YN;
 				ENABLE_BITCODE = NO;
-				FLUTTER_BUILD_NUMBER = 2;
+				FLUTTER_BUILD_NUMBER = 4;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
@@ -577,7 +577,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ionicframework.usts;
 				PRODUCT_NAME = "Mission Vulcain";
-				PROVISIONING_PROFILE_SPECIFIER = "mission vulcain distribution";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

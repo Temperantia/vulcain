@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1098839863397-5nq5uj23dqm5va2kgrbq780mlnn97sbp.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1098839863397-5nq5uj23dqm5va2kgrbq780mlnn97sbp</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>1098839863397-ft25jc7jscibd9m30eddsrhnek2sln0f.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyD5NhGnA6PJwJf92AnnUnT6lLUHiK9y9Mg</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1098839863397</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.ionicframework.usts</string>
+	<key>PROJECT_ID</key>
+	<string>vulcain-dc2a5</string>
+	<key>STORAGE_BUCKET</key>
+	<string>vulcain-dc2a5.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1098839863397:ios:75d0cb55ddcbda096ad68c</string>
+	<key>DATABASE_URL</key>
+	<string>https://vulcain-dc2a5.firebaseio.com</string>
+</dict>
+</plist>

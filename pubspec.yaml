@@ -15,6 +15,7 @@ dependencies:
   flutter_speed_dial: any
   firebase_core: any
   firebase_auth: any
+  apple_sign_in: any
   google_sign_in: any
   location: any
   geolocator: any
