@@ -12,7 +12,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  static final AppleSignIn _appleSignIn = AppleSignIn();
   static final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   Future<void> _login() async {
@@ -42,21 +41,21 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Platform.isIOS ? Colors.black : Colors.white,
+        backgroundColor: Platform.isIOS ? Colors.black : Colors.white,
         body: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Center(
-            child: Platform.isAndroid
-                ? SignInButton(
-                    Buttons.Google,
-                    onPressed: () => _login(),
-                  )
-                : SignInButton(
-                    Buttons.Apple,
-                    onPressed: () => _loginApple(),
-                  ))
-      ],
-    ));
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Center(
+                child: Platform.isAndroid
+                    ? SignInButton(
+                        Buttons.Google,
+                        onPressed: () => _login(),
+                      )
+                    : SignInButton(
+                        Buttons.Apple,
+                        onPressed: () => _loginApple(),
+                      ))
+          ],
+        ));
   }
 }

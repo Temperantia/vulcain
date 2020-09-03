@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1098839863397-g9t54unhnsemvqn7d6289hmbqrne6u4j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.inclusive.vulcain",
+            "certificate_hash": "bcc415ce67fb60f943a100abfc8e52edc0d3d746"
+          }
+        },
+        {
           "client_id": "1098839863397-ft25jc7jscibd9m30eddsrhnek2sln0f.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -64,10 +72,10 @@
               "client_type": 3
             },
             {
-              "client_id": "1098839863397-ur3t7l19fo92uctvvdd1q7hamo537v48.apps.googleusercontent.com",
+              "client_id": "1098839863397-5nq5uj23dqm5va2kgrbq780mlnn97sbp.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.inclusive.vulcain"
+                "bundle_id": "com.ionicframework.usts"
               }
             }
           ]

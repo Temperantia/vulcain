@@ -4,11 +4,9 @@ import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_compass/flutter_compass.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:latlong/latlong.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:vulcain/db.dart';
 import 'package:vulcain/location.dart';
 import 'package:vulcain/search.dart';
@@ -45,7 +43,6 @@ class _MapPageState extends State<MapPage> {
   String _windDirection;
   int _windSpeed = -1;
   final TextEditingController _windSpeedController = TextEditingController();
-  var _directionController = PhotoViewController();
 
   @override
   void initState() {
@@ -67,7 +64,10 @@ class _MapPageState extends State<MapPage> {
   Future<String> doPost(FireStart fstart) async {
     var url = 'https://api.sendinblue.com/v3/smtp/email';
     var body = jsonEncode({
-      "sender": {"name": "Application vulcain", "email": "robin.despouys@gmail.com"},
+      "sender": {
+        "name": "Application vulcain",
+        "email": "robin.despouys@gmail.com"
+      },
       "to": [
         {"email": "appvulcain@gmail.com", "name": "app Vulcain"}
       ],
@@ -102,9 +102,9 @@ class _MapPageState extends State<MapPage> {
     double angle15AsRadian = (15 * pi) / 180;
     double angle30AsRadian = (30 * pi) / 180;
     double angle75AsRadian = (75 * pi) / 180;
-    
+
     double latitudeAsRadian = (_originPoint.latitude * pi) / 180;
-    double estim1MinuteAngle = 1000 * 40075 * cos(latitudeAsRadian) / 360 / 60 ;
+    double estim1MinuteAngle = 1000 * 40075 * cos(latitudeAsRadian) / 360 / 60;
 
     var _distanceLatitude = _distance;
     var _distanceLongitude = _distance * 1810 / estim1MinuteAngle;
@@ -162,7 +162,7 @@ class _MapPageState extends State<MapPage> {
       case 'sud':
         {
           longx = -_distanceLongitude / tan(angle60AsRadian);
-          latx = - _distanceLatitude;
+          latx = -_distanceLatitude;
           longx2 = _distanceLongitude / tan(angle60AsRadian);
           latx2 = -_distanceLatitude;
         }
@@ -235,12 +235,13 @@ class _MapPageState extends State<MapPage> {
   void _hideSurfaceMarkers() {
     setState(() {
       for (final marker in _surfaces) {
-      _markers.removeWhere((element) => element.point == marker.point);
+        _markers.removeWhere((element) => element.point == marker.point);
       }
     });
   }
 
-  Marker _getSurfaceMarker(List<LatLng> triangle, double distance, String legende) {
+  Marker _getSurfaceMarker(
+      List<LatLng> triangle, double distance, String legende) {
     double _latitude =
         (triangle[0].latitude + triangle[1].latitude + triangle[2].latitude) /
             3;
@@ -249,8 +250,10 @@ class _MapPageState extends State<MapPage> {
             triangle[2].longitude) /
         3;
     double _surface = pi * distance * distance / (6 * 10000);
+    print(distance / 500000);
+    print(_latitude);
     return Marker(
-        point: LatLng(_latitude, _longitude),
+        point: LatLng(_latitude + distance / 500000, _longitude),
         width: 250,
         height: 40,
         builder: (context) => Container(
@@ -271,7 +274,7 @@ class _MapPageState extends State<MapPage> {
         _getTriangleFromMediane(_origin, estimations[0], fstart.windDirection);
     Polyline _polyline2 =
         _getTriangleFromMediane(_origin, estimations[1], fstart.windDirection);
-        Polyline _polyline3 =
+    Polyline _polyline3 =
         _getTriangleFromMediane(_origin, estimations[2], fstart.windDirection);
     Polyline _polyline4 =
         _getTriangleFromMediane(_origin, estimations[3], fstart.windDirection);
@@ -281,7 +284,7 @@ class _MapPageState extends State<MapPage> {
         color: Color.fromARGB(200, 240, 100, 60), points: _polyline2.points);
     Polygon _polygone3 = Polygon(
         color: Color.fromARGB(400, 480, 100, 90), points: _polyline3.points);
-        Polygon _polygone4 = Polygon(
+    Polygon _polygone4 = Polygon(
         color: Color.fromARGB(800, 800, 100, 120), points: _polyline4.points);
 
     Marker _marker1 =
@@ -551,7 +554,7 @@ class _MapPageState extends State<MapPage> {
                 onTap: () {
                   setState(() => _showSearch = !_showSearch);
                 }),
-          /*  SpeedDialChild(
+            /*  SpeedDialChild(
                 child: Icon(Icons.my_location),
                 label: _hasPrivilege
                     ? 'Passer au mode gratuit'
@@ -562,20 +565,20 @@ class _MapPageState extends State<MapPage> {
                     _typeOfPoint = "départ de feu";
                   }); 
                 }), */
-                SpeedDialChild(
-                  child: Icon(Icons.change_history),
-                  label: _showSurfaces ? 
-                    'Cacher les détails' : 'Afficher les détails',
-                  onTap: () {
-                    if (!_showSurfaces) {
-                      _showSurfaceMarkers();
-                      _showSurfaces = true;
-                    } else {
-                      _hideSurfaceMarkers();
-                      _showSurfaces = false;
-                    }
+            SpeedDialChild(
+                child: Icon(Icons.change_history),
+                label: _showSurfaces
+                    ? 'Cacher les détails'
+                    : 'Afficher les détails',
+                onTap: () {
+                  if (!_showSurfaces) {
+                    _showSurfaceMarkers();
+                    _showSurfaces = true;
+                  } else {
+                    _hideSurfaceMarkers();
+                    _showSurfaces = false;
                   }
-                )
+                })
           ],
         ),
         body: _showSearch

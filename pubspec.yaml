@@ -1,6 +1,6 @@
 name: vulcain
 description: Signalisation de feux de forêt
-version: 1.0.0+1
+version: 1.0.0+4
 publish_to: "none"
 
 environment:
@@ -23,8 +23,6 @@ dependencies:
   path_provider: any
   path: any
   sqflite: any
-  flutter_compass: any
-  photo_view: any
 flutter:
   uses-material-design: true
   assets:
