@@ -1,7 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:vulcain/db.dart';
-import 'package:vulcain/login.dart';
+//import 'package:vulcain/login.dart';
 import 'package:vulcain/map.dart';
 
 void main() async {
@@ -34,16 +34,18 @@ class _MyAppState extends State<MyApp> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [Center(child: CircularProgressIndicator())]));
     }
+    /*
     return StreamBuilder<FirebaseUser>(
       stream: FirebaseAuth.instance.onAuthStateChanged,
       builder: (BuildContext context, snapshot) {
         if (snapshot.hasData) {
-          return MapPage();
-        } else {
+          */
+    return MapPage();
+    /*  } else {
           return LoginPage();
         }
       },
-    );
+    ); */
   }
 
   @override
